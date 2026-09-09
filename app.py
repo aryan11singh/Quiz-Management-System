@@ -339,7 +339,7 @@ else:
                         st.markdown(f"**Answering {len(quiz_set)} Randomized Questions:**")
                         for idx, (qno, ques, a, b, c, d, correct, hint, explanation) in enumerate(quiz_set, 1):
                             st.markdown(f"**Q{idx}. {ques}**")
-                            opts = [f"a) {a}", f"b) {b}", f"c) {c}", f"d) {d}", "Leave blank"]
+                            opts = [f"a) {a}", f"b) {b}", f"c) {c}", f"d) {d}"]
                             c_val = st.radio(f"Select answer for Q{idx}:", opts, key=f"sq_{qno}", index=None, label_visibility="collapsed")
                             user_choices[qno] = (c_val, correct, a, b, c, d, explanation)
 
@@ -358,7 +358,7 @@ else:
                         hints_used_count = sum(1 for qno in user_choices if st.session_state.get(f"hint_{qno}", False))
 
                         for qno, (c_val, correct, a, b, c, d, exp) in user_choices.items():
-                            if c_val and c_val != "Leave blank":
+                            if c_val:
                                 letter = c_val[0].lower()
                                 opt_map = {'a': str(a).strip().lower(), 'b': str(b).strip().lower(), 'c': str(c).strip().lower(), 'd': str(d).strip().lower()}
                                 clean_corr = str(correct).strip().lower()
