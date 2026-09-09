@@ -92,7 +92,6 @@ def init_db(conn):
         c TEXT,
         d TEXT,
         correct TEXT,
-        hint TEXT,
         explanation TEXT
     )""")
     cur.execute("""
@@ -110,7 +109,6 @@ def init_db(conn):
         total_questions INTEGER,
         score_percentage REAL,
         time_taken_seconds INTEGER,
-        hints_used INTEGER,
         attempt_date TEXT,
         passed INTEGER
     )""")

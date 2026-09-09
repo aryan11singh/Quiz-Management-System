@@ -14,7 +14,7 @@ def play_quiz(conn):
         name = "Anonymous"
 
     # Fetch all questions
-    cur.execute("SELECT qno, ques, a, b, c, d, correct, hint, explanation FROM questions")
+    cur.execute("SELECT qno, ques, a, b, c, d, correct, explanation FROM questions")
     all_questions = cur.fetchall()
 
     if not all_questions:
@@ -36,11 +36,10 @@ def play_quiz(conn):
 
     score = 0
     total = len(questions)
-    hints_used = 0
     start_time = time.time()
 
 
-    for i, (qno, ques, a, b, c, d, correct, hint, explanation) in enumerate(questions, 1):
+    for i, (qno, ques, a, b, c, d, correct, explanation) in enumerate(questions, 1):
         print(f"\nQ{i}: {ques}")
         print(f"  a) {a}")
         print(f"  b) {b}")
@@ -56,18 +55,11 @@ def play_quiz(conn):
         correct_clean = str(correct).strip().lower()
 
         while True:
-            ans = input("Your answer (a/b/c/d) or 'hint': ").strip().lower()
-            if ans == "hint":
-                hints_used += 1
-                if hint and hint.strip():
-                    print(f"  [HINT] {hint.strip()}")
-                else:
-                    print("  [HINT] No hint available for this question.")
-                continue
-            elif ans in ['a', 'b', 'c', 'd'] or ans in options_map.values():
+            ans = input("Your answer (a/b/c/d): ").strip().lower()
+            if ans in ['a', 'b', 'c', 'd'] or ans in options_map.values():
                 break
             else:
-                print("  [!] Please enter a valid option (a, b, c, d) or 'hint'.")
+                print("  [!] Please enter a valid option (a, b, c, d).")
 
         # Determine if answer is correct
         is_correct = False
@@ -106,7 +98,7 @@ def play_quiz(conn):
     print("\n" + "=" * 40)
     print(f"Quiz Completed! Final Score for {name}:")
     print(f"Score: {score}/{total} ({score_percentage:.2f}%)")
-    print(f"Time Taken: {time_taken_seconds} seconds | Hints Used: {hints_used}")
+    print(f"Time Taken: {time_taken_seconds} seconds")
     print(f"Status: {'PASSED [OK]' if passed else 'NEEDS IMPROVEMENT'}")
     print("=" * 40)
 
@@ -114,9 +106,9 @@ def play_quiz(conn):
     cur.execute("""
         INSERT INTO attempts (
             student_name, score, total_questions, score_percentage,
-            time_taken_seconds, hints_used, attempt_date, passed
-        ) VALUES (?, ?, ?, ?, ?, ?, datetime('now'), ?)
-    """, (name, score, total, score_percentage, time_taken_seconds, hints_used, passed))
+            time_taken_seconds, attempt_date, passed
+        ) VALUES (?, ?, ?, ?, ?, datetime('now'), ?)
+    """, (name, score, total, score_percentage, time_taken_seconds, passed))
 
     # 2. Save to leaderboard
     cur.execute("PRAGMA table_info(leaderboard)")

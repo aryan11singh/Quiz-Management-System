@@ -92,35 +92,6 @@ def plot_time_vs_score(df, save_dir):
     return out_path
 
 
-def plot_hint_impact(df, save_dir):
-    """Boxplot showing how hint usage impacts quiz scoring."""
-    plt.figure(figsize=(8, 5))
-    sns.set_theme(style="whitegrid")
-
-    sns.boxplot(
-        data=df,
-        x="hints_used",
-        y="score_percentage",
-        hue="hints_used",
-        legend=False,
-        palette="Blues_r",
-        showmeans=True,
-        meanprops={"marker": "o", "markerfacecolor": "red", "markeredgecolor": "black", "markersize": "7"}
-    )
-
-
-    plt.title("Impact of Hint Usage on Learner Scores", fontsize=14, fontweight="bold", pad=12)
-    plt.xlabel("Number of Hints Requested", fontsize=11)
-    plt.ylabel("Score Percentage (%)", fontsize=11)
-    plt.ylim(-5, 105)
-    plt.tight_layout()
-
-    out_path = os.path.join(save_dir, "hint_impact_boxplot.png")
-    plt.savefig(out_path, dpi=300)
-    plt.close()
-    return out_path
-
-
 def plot_performance_tiers(df, save_dir):
     """Donut chart illustrating proportion of learner performance tiers."""
     plt.figure(figsize=(7, 7))
@@ -167,13 +138,10 @@ def generate_all_charts(conn):
     p2 = plot_time_vs_score(df, charts_dir)
     print(f"  [+] Saved Time vs Score Plot: {os.path.basename(p2)}")
 
-    p3 = plot_hint_impact(df, charts_dir)
-    print(f"  [+] Saved Hint Impact Boxplot: {os.path.basename(p3)}")
-
     p4 = plot_performance_tiers(df, charts_dir)
     print(f"  [+] Saved Performance Tiers Chart: {os.path.basename(p4)}")
 
-    print(f"\n[+] All 4 visual analytics charts successfully generated in:")
+    print(f"\n[+] All 3 visual analytics charts successfully generated in:")
     print(f"    {charts_dir}\n")
 
-    return [p1, p2, p3, p4]
+    return [p1, p2, p4]

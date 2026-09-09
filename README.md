@@ -1,5 +1,7 @@
 #  Quiz Management System (Python for Data Science & Analytics)
 
+**🚀 Live Demo:** [https://quizmanagementsystem.streamlit.app/](https://quizmanagementsystem.streamlit.app/)
+
 [![Python 3.x](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
 [![Data Science](https://img.shields.io/badge/Domain-Python%20for%20Data%20Science-orange.svg)]()
 [![Data Analytics](https://img.shields.io/badge/Analytics-Pandas%20%7C%20NumPy-brightgreen.svg)]()
