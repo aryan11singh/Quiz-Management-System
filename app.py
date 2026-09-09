@@ -89,10 +89,9 @@ def init_db(conn):
                         row.get("Option3", ""),
                         row.get("Option4", ""),
                         row.get("CorrectAnswer", ""),
-                        row.get("hint", "") if pd.notna(row.get("hint")) else "",
                         row.get("explanation", "") if pd.notna(row.get("explanation")) else ""
                     ))
-                cur.executemany("INSERT INTO questions (ques, a, b, c, d, correct, hint, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", records)
+                cur.executemany("INSERT INTO questions (ques, a, b, c, d, correct, explanation) VALUES (?, ?, ?, ?, ?, ?, ?)", records)
             except Exception as e:
                 print(f"Error auto-loading quiz.csv: {e}")
                 
@@ -301,7 +300,7 @@ else:
         with student_tabs[0]:
             st.markdown("###  Active Assessment: General Knowledge & Data Foundations")
             cur = conn.cursor()
-            cur.execute("SELECT qno, ques, a, b, c, d, correct, hint, explanation FROM questions ORDER BY qno ASC")
+            cur.execute("SELECT qno, ques, a, b, c, d, correct, explanation FROM questions ORDER BY qno ASC")
             all_questions = cur.fetchall()
 
             if not all_questions:
@@ -335,16 +334,12 @@ else:
 
                     with st.form("student_assessment_form"):
                         st.markdown(f"**Answering {len(quiz_set)} Randomized Questions:**")
-                        for idx, (qno, ques, a, b, c, d, correct, hint, explanation) in enumerate(quiz_set, 1):
+                        for idx, (qno, ques, a, b, c, d, correct, explanation) in enumerate(quiz_set, 1):
                             st.markdown(f"**Q{idx}. {ques}**")
                             opts = [f"a) {a}", f"b) {b}", f"c) {c}", f"d) {d}"]
                             c_val = st.radio(f"Select answer for Q{idx}:", opts, key=f"sq_{qno}", index=None, label_visibility="collapsed")
                             user_choices[qno] = (c_val, correct, a, b, c, d, explanation)
 
-                            if hint and hint.strip():
-                                show_hint = st.checkbox(f" Need a hint for Q{idx}?", key=f"hint_{qno}")
-                                if show_hint:
-                                    st.info(f"Hint: {hint}")
                             st.write("")
 
                         submit_assessment = st.form_submit_button(" Finish & Submit Assessment", type="primary", use_container_width=True)
@@ -353,7 +348,6 @@ else:
                         duration = max(1, int(time.time() - st.session_state.quiz_start_time))
                         correct_count = 0
                         total_q = len(quiz_set)
-                        hints_used_count = sum(1 for qno in user_choices if st.session_state.get(f"hint_{qno}", False))
 
                         for qno, (c_val, correct, a, b, c, d, exp) in user_choices.items():
                             if c_val:
@@ -374,9 +368,9 @@ else:
                         cur.execute("""
                             INSERT INTO attempts (
                                 student_name, score, total_questions, score_percentage,
-                                time_taken_seconds, hints_used, attempt_date, passed
-                            ) VALUES (?, ?, ?, ?, ?, ?, datetime('now'), ?)
-                        """, (st.session_state.username, correct_count, total_q, score_percentage, duration, hints_used_count, passed))
+                                time_taken_seconds, attempt_date, passed
+                            ) VALUES (?, ?, ?, ?, ?, datetime('now'), ?)
+                        """, (st.session_state.username, correct_count, total_q, score_percentage, duration, passed))
 
                         # Save leaderboard
                         cur.execute("PRAGMA table_info(leaderboard)")
@@ -430,7 +424,7 @@ else:
                 st.divider()
                 st.markdown("#### Assessment History")
                 st.dataframe(
-                    df_my[["attempt_date", "score", "total_questions", "score_percentage", "time_taken_seconds", "hints_used", "passed"]],
+                    df_my[["attempt_date", "score", "total_questions", "score_percentage", "time_taken_seconds", "passed"]],
                     use_container_width=True,
                     column_config={
                         "score_percentage": st.column_config.ProgressColumn("Score %", format="%.1f%%", min_value=0, max_value=100),
@@ -478,14 +472,13 @@ else:
                 )
 
                 # KPIs
-                k1, k2, k3, k4, k5 = st.columns(5)
+                k1, k2, k3, k4 = st.columns(4)
                 tot = len(df_cohort)
                 pass_cnt = int(df_cohort["passed"].sum())
                 k1.metric("Total Attempts", tot)
                 k2.metric("Cohort Pass Rate", f"{(pass_cnt / tot) * 100:.1f}%")
                 k3.metric("Mean Score", f"{df_cohort['score_percentage'].mean():.1f}%")
                 k4.metric("Avg Completion Time", f"{df_cohort['time_taken_seconds'].mean():.0f}s")
-                k5.metric("Avg Hints Requested", f"{df_cohort['hints_used'].mean():.1f}")
 
                 st.divider()
 
@@ -519,21 +512,11 @@ else:
                     ax2.set_ylabel("Score %")
                     st.pyplot(fig2)
 
-                row2_col1, row2_col2 = st.columns(2)
-                with row2_col1:
-                    fig3, ax3 = plt.subplots(figsize=(7, 4.5))
-                    sns.boxplot(data=df_cohort, x="hints_used", y="score_percentage", hue="hints_used", legend=False, palette="Blues_r", showmeans=True, ax=ax3)
-                    ax3.set_title("Hint Requests Impact on Score Spread", fontweight="bold")
-                    ax3.set_xlabel("Hints Requested")
-                    ax3.set_ylabel("Score %")
-                    st.pyplot(fig3)
-
-                with row2_col2:
-                    fig4, ax4 = plt.subplots(figsize=(7, 4.5))
-                    t_counts = df_cohort["Performance Tier"].value_counts()
-                    ax4.pie(t_counts, labels=t_counts.index, autopct="%1.1f%%", startangle=140, colors=["#99ff99", "#66b3ff", "#ff9999"], wedgeprops=dict(width=0.4, edgecolor="white"))
-                    ax4.set_title("Cohort Competency Breakdown", fontweight="bold")
-                    st.pyplot(fig4)
+                fig4, ax4 = plt.subplots(figsize=(7, 4.5))
+                t_counts = df_cohort["Performance Tier"].value_counts()
+                ax4.pie(t_counts, labels=t_counts.index, autopct="%1.1f%%", startangle=140, colors=["#99ff99", "#66b3ff", "#ff9999"], wedgeprops=dict(width=0.4, edgecolor="white"))
+                ax4.set_title("Cohort Competency Breakdown", fontweight="bold")
+                st.pyplot(fig4)
 
                 st.markdown("#### Complete Cohort Attempt Records")
                 st.dataframe(df_cohort, use_container_width=True)
@@ -553,7 +536,7 @@ else:
                 # --- Classification Tab ---
                 with ml_sub_tabs[0]:
                     st.markdown("#### Binary Classification: Pass/Fail Prediction")
-                    st.caption("Models: Logistic Regression & Random Forest | Features: time, hints, speed, hint_ratio")
+                    st.caption("Models: Logistic Regression & Random Forest | Features: time, speed")
 
                     with st.spinner("Training classifiers..."):
                         clf = ml_models.train_classifiers(df_ml)
@@ -642,7 +625,7 @@ else:
                 # --- Clustering Tab ---
                 with ml_sub_tabs[2]:
                     st.markdown("#### K-Means Clustering: Learner Segmentation")
-                    st.caption("Unsupervised grouping of learners by score, time, and hint usage")
+                    st.caption("Unsupervised grouping of learners by score and time")
 
                     n_clusters = st.slider("Number of Clusters (K):", min_value=2, max_value=6, value=3)
 
@@ -653,8 +636,8 @@ else:
                               help="Ranges from -1 to 1. Higher is better — indicates well-separated clusters.")
 
                     st.markdown("**Cluster Summary**")
-                    summary_display = clust["cluster_summary"][["segment", "count", "avg_score", "avg_time", "avg_hints"]].copy()
-                    summary_display.columns = ["Segment", "Count", "Avg Score %", "Avg Time (s)", "Avg Hints"]
+                    summary_display = clust["cluster_summary"][["segment", "count", "avg_score", "avg_time"]].copy()
+                    summary_display.columns = ["Segment", "Count", "Avg Score %", "Avg Time (s)"]
                     st.dataframe(summary_display, use_container_width=True, hide_index=True)
 
                     clust_col1, clust_col2 = st.columns(2)
@@ -691,21 +674,20 @@ else:
                     st.caption("New features computed from raw attempt data for ML modeling")
 
                     df_feat = ml_models.engineer_features(df_ml)
-                    feature_cols = ["student_name", "score_percentage", "time_taken_seconds", "hints_used",
-                                    "speed", "hint_ratio", "is_fast", "attempt_number", "score_improvement"]
+                    feature_cols = ["student_name", "score_percentage", "time_taken_seconds",
+                                    "speed", "is_fast", "attempt_number", "score_improvement"]
                     st.dataframe(
                         df_feat[feature_cols].head(50),
                         use_container_width=True,
                         column_config={
                             "speed": st.column_config.NumberColumn("Speed (Q/s)", format="%.4f"),
-                            "hint_ratio": st.column_config.NumberColumn("Hint Ratio", format="%.2f"),
                             "score_improvement": st.column_config.NumberColumn("Score Δ", format="%.1f"),
                         }
                     )
 
                     st.markdown("**Correlation Matrix (Engineered Features)**")
-                    numeric_cols = ["score_percentage", "time_taken_seconds", "hints_used",
-                                    "speed", "hint_ratio", "attempt_number", "score_improvement"]
+                    numeric_cols = ["score_percentage", "time_taken_seconds",
+                                    "speed", "attempt_number", "score_improvement"]
                     fig_corr, ax_corr = plt.subplots(figsize=(8, 6))
                     corr_matrix = df_feat[numeric_cols].corr()
                     sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="RdBu_r",
@@ -737,9 +719,7 @@ else:
                         ax_daily2.legend(loc="upper right")
                         st.pyplot(fig_daily)
 
-                    st.markdown("** Hint Usage vs Pass Rate (GROUP BY Analysis):**")
-                    df_hints = analytics.get_hint_vs_passrate(conn)
-                    st.dataframe(df_hints, use_container_width=True, hide_index=True)
+
 
         # TAB 3: QUESTION BANK MANAGEMENT
         with admin_tabs[2]:
@@ -754,15 +734,14 @@ else:
                     q_c = st.text_input("Option C:")
                     q_d = st.text_input("Option D:")
                     q_corr = st.text_input("Correct Answer (a/b/c/d or option text):")
-                    q_hint = st.text_input("Hint (optional):")
                     q_exp = st.text_area("Explanation (optional):")
 
                     if st.form_submit_button("Add Question to Repository", type="primary"):
                         if q_text.strip() and q_a.strip():
                             cur = conn.cursor()
                             cur.execute(
-                                "INSERT INTO questions (ques, a, b, c, d, correct, hint, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                                (q_text, q_a, q_b, q_c, q_d, q_corr, q_hint, q_exp)
+                                "INSERT INTO questions (ques, a, b, c, d, correct, explanation) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                                (q_text, q_a, q_b, q_c, q_d, q_corr, q_exp)
                             )
                             conn.commit()
                             st.success("Question added successfully!")
@@ -785,12 +764,11 @@ else:
                                 c = str(r.get('Option3', r.get('c', ''))).strip()
                                 d = str(r.get('Option4', r.get('d', ''))).strip()
                                 correct = str(r.get('CorrectAnswer', r.get('correct', ''))).strip()
-                                hint = str(r.get('hint', '')).strip() if pd.notna(r.get('hint')) else ''
                                 exp = str(r.get('explanation', '')).strip() if pd.notna(r.get('explanation')) else ''
                                 if ques:
-                                    rows.append((ques, a, b, c, d, correct, hint, exp))
+                                    rows.append((ques, a, b, c, d, correct, exp))
                             cur = conn.cursor()
-                            cur.executemany("INSERT INTO questions (ques, a, b, c, d, correct, hint, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", rows)
+                            cur.executemany("INSERT INTO questions (ques, a, b, c, d, correct, explanation) VALUES (?, ?, ?, ?, ?, ?, ?)", rows)
                             conn.commit()
                             st.success(f"Loaded {len(rows)} questions into repository!")
                     except Exception as e:

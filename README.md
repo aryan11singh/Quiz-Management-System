@@ -90,7 +90,7 @@ Aryan singh Quiz_Management_System_Final (1)/
 ├── main.py                             # Main CLI Entry Point & Menu Router
 ├── admin.py                            # Secure Admin Authentication & Role Management
 ├── quizmgmt.py                         # Quiz Question CRUD & Robust CSV Loader
-├── quiz.py                             # Interactive Quiz Taking Engine (Timing & Hints)
+├── quiz.py                             # Interactive Quiz Taking Engine (Timing)
 ├── leaderboard.py                      # Real-Time Ranked Leaderboard Module
 ├── analytics.py                        # EDA & Descriptive Statistics (Pandas, NumPy)
 ├── visualizer.py                       # Visual Dashboards & Charts (Matplotlib, Seaborn)

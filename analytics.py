@@ -13,7 +13,6 @@ def get_attempts_dataframe(conn):
         total_questions,
         score_percentage,
         time_taken_seconds,
-        hints_used,
         attempt_date,
         passed
     FROM attempts
@@ -53,13 +52,8 @@ def generate_eda_summary(conn):
     mean_time = float(np.mean(times))
     median_time = float(np.median(times))
 
-    # Hints stats
-    hints = df["hints_used"].values
-    mean_hints = float(np.mean(hints))
-
     # Correlation Matrix
     corr_time_score = float(df["time_taken_seconds"].corr(df["score_percentage"]))
-    corr_hints_score = float(df["hints_used"].corr(df["score_percentage"]))
 
     # Performance Segmentation
     df["performance_tier"] = pd.cut(
@@ -90,11 +84,9 @@ def generate_eda_summary(conn):
     print(f"Behavioral & Engagement Metrics:")
     print(f"  - Avg Time Taken        : {mean_time:.1f} sec (~{mean_time / 60:.1f} mins)")
     print(f"  - Median Time Taken     : {median_time:.1f} sec")
-    print(f"  - Avg Hints Requested   : {mean_hints:.1f} hints / attempt")
     print("-" * 65)
     print(f"Statistical Correlations (Pearson's r):")
     print(f"  - Time vs Score Corr    : {corr_time_score:+.3f}")
-    print(f"  - Hints vs Score Corr   : {corr_hints_score:+.3f} (Negative: more hints -> lower score)")
     print("-" * 65)
     print(f"Learner Performance Tiers:")
     for tier, count in tier_counts.items():
@@ -110,8 +102,7 @@ def generate_eda_summary(conn):
         "mean_score": mean_score,
         "median_score": median_score,
         "std_score": std_score,
-        "mean_time": mean_time,
-        "corr_hints_score": corr_hints_score
+        "mean_time": mean_time
     }
 
 
@@ -145,8 +136,7 @@ def get_top_performers(conn, limit=10):
         ROUND(AVG(score_percentage), 2) AS avg_score,
         MAX(score_percentage) AS best_score,
         MIN(score_percentage) AS worst_score,
-        ROUND(AVG(time_taken_seconds), 1) AS avg_time_sec,
-        ROUND(AVG(hints_used), 1) AS avg_hints
+        ROUND(AVG(time_taken_seconds), 1) AS avg_time_sec
     FROM attempts
     GROUP BY student_name
     HAVING COUNT(*) >= 2
@@ -168,23 +158,6 @@ def get_daily_trends(conn):
     FROM attempts
     GROUP BY DATE(attempt_date)
     ORDER BY day ASC
-    """
-    return pd.read_sql_query(query, conn)
-
-
-def get_hint_vs_passrate(conn):
-    """Hint usage vs pass rate — demonstrates GROUP BY correlation analysis in SQL."""
-    query = """
-    SELECT
-        hints_used,
-        COUNT(*) AS total_attempts,
-        SUM(passed) AS passed,
-        ROUND(SUM(passed) * 100.0 / COUNT(*), 1) AS pass_rate,
-        ROUND(AVG(score_percentage), 1) AS avg_score,
-        ROUND(AVG(time_taken_seconds), 1) AS avg_time
-    FROM attempts
-    GROUP BY hints_used
-    ORDER BY hints_used ASC
     """
     return pd.read_sql_query(query, conn)
 
