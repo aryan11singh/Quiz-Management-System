@@ -20,7 +20,7 @@
 The **Quiz Management System** is an end-to-end Python project showcasing both **Software Engineering / Database Management** and **Applied Data Science & Business Intelligence Analytics**.
 
 It features a dual-layer architecture:
-1. **Interactive Assessment Engine (Application Layer):** A secure assessment platform supporting candidate registration, timed quiz taking with hints, instant score evaluation, leaderboard rankings, and administrator question repository management (CRUD & CSV bulk loading).
+1. **Interactive Assessment Engine (Application Layer):** A secure assessment platform supporting candidate registration, timed quiz taking, instant score evaluation, leaderboard rankings, and administrator question repository management (CRUD & CSV bulk loading).
 2. **Data Analytics & BI Dashboard (Data Science Layer):** A professional analytics dashboard powered by **Pandas, NumPy, Matplotlib, Seaborn, and Streamlit** that transforms raw relational assessment logs into actionable pedagogical insights, engagement correlations, score distributions, and performance segmentation.
 
 ---
@@ -46,7 +46,7 @@ It features a dual-layer architecture:
                      | - login (auth)            |----------->|  - NumPy: Numerical Metrics  |
                      | - questions (assessment)  |            |  - Matplotlib & Seaborn      |
                      | - leaderboard (ranks)     |            +------------------------------+
-                     | - attempts (time & hints) |                             |
+                     | - attempts (time & scores)|                             |
                      +---------------------------+                             v
                                                               +------------------------------+
                                                               | Visual Dashboards & Reports  |
@@ -69,16 +69,13 @@ This project implements all core competencies required in professional Data Scie
 ### 2. Exploratory Data Analysis (EDA) & Summary Statistics
 - **Descriptive Statistics:** Mean (66.56%), Median (70.00%), Standard Deviation (21.95%), Interquartile Range (IQR = 30.00%), Minimum/Maximum scores.
 - **Statistical Correlations (Pearson's $r$):**
-  - Hints Requested vs. Final Score ($r \approx -0.81$): Identifies cognitive difficulty patterns.
   - Completion Duration vs. Final Score ($r \approx -0.75$): Analyzes pacing and conceptual struggle.
-  - Hints Requested vs. Duration ($r \approx +0.35$): Measures active engagement duration added by hints.
 - **Competency Segmentation:** Automatic categorical binning into *Distinction (75-100%)*, *Competent (50-74%)*, and *Needs Improvement (<50%)*.
 
 ### 3. Publication-Grade Visual Analytics (Matplotlib & Seaborn)
 The interactive dashboard provides real-time visualization of:
 - **Score Distribution (KDE & Histogram):** Visualizes performance variance with Mean and Median reference thresholds.
 - **Completion Time vs. Score Percentage:** Multi-class scatter plot with linear regression trendline indicating pass/fail boundaries.
-- **Hint Usage Impact (Boxplot):** Statistical boxplot demonstrating how hint frequency affects score spread.
 - **Competency Tier Breakdown (Donut Chart):** Proportional breakdown of learner classifications.
 - **Correlation Heatmap:** Complete matrix quantifying engagement behavior vs. outcome.
 
@@ -120,7 +117,7 @@ Open your browser at **`http://localhost:8501`**.
 
 The Web App features 4 dedicated tabs:
 1.  **Data Science & Analytics Dashboard:** Real-time KPI cards, interactive tier filters, name search, Seaborn charts, correlation heatmap, and CSV export.
-2.  **Play Quiz:** Interactive candidate assessment with timer, hint expander, and instant balloons result.
+2.  **Play Quiz:** Interactive candidate assessment with timer and instant balloons result.
 3.  **Live Leaderboard:** Real-time ranks (, , ) with progress bars.
 4.  **Admin Portal:** Secure management (Username: `admin`, Password: `admin123`) for question editing and CSV bulk uploads.
 
@@ -156,6 +153,6 @@ To get a live public portfolio link for your resume and LinkedIn:
 ##  Key Talking Points for Technical Interviews
 
 When explaining this project in an interview or viva:
-1. **End-to-End Ownership:** *"I developed both the operational data collection application and the downstream analytics pipeline. User actions like hints taken and time elapsed are captured in SQLite and analyzed using Pandas and Seaborn."*
-2. **Statistical Rigor:** *"Rather than looking at simple averages, I computed standard deviation, IQR, and Pearson correlation coefficients ($r \approx -0.81$ between hints and score) to identify where students experience conceptual bottlenecks."*
+1. **End-to-End Ownership:** *"I developed both the operational data collection application and the downstream analytics pipeline. User actions like time elapsed are captured in SQLite and analyzed using Pandas and Seaborn."*
+2. **Statistical Rigor:** *"Rather than looking at simple averages, I computed standard deviation, IQR, and Pearson correlation coefficients to identify where students experience conceptual bottlenecks."*
 3. **Business & Educational Impact:** *"The analytics dashboard allows course coordinators to identify challenging questions and segment learners into competency tiers for targeted intervention."*
