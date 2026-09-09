@@ -1,4 +1,4 @@
-# 🎓 Quiz Management System (Python for Data Science & Analytics)
+#  Quiz Management System (Python for Data Science & Analytics)
 
 [![Python 3.x](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/)
 [![Data Science](https://img.shields.io/badge/Domain-Python%20for%20Data%20Science-orange.svg)]()
@@ -13,7 +13,7 @@
 
 ---
 
-## 📌 Executive Summary
+##  Executive Summary
 
 The **Quiz Management System** is an end-to-end Python project showcasing both **Software Engineering / Database Management** and **Applied Data Science & Business Intelligence Analytics**.
 
@@ -23,7 +23,7 @@ It features a dual-layer architecture:
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 ```
                                +------------------------------------------+
@@ -56,7 +56,7 @@ It features a dual-layer architecture:
 
 ---
 
-## 🔬 Data Science & Analytics Capabilities
+##  Data Science & Analytics Capabilities
 
 This project implements all core competencies required in professional Data Science and Analytics roles:
 
@@ -82,7 +82,7 @@ The interactive dashboard provides real-time visualization of:
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 Aryan singh Quiz_Management_System_Final (1)/
@@ -108,7 +108,7 @@ Aryan singh Quiz_Management_System_Final (1)/
 
 ---
 
-## 🚀 How to Run the Project
+##  How to Run the Project
 
 ### 1. Launch the Modern Web Dashboard (Recommended)
 ```bash
@@ -117,10 +117,10 @@ streamlit run app.py
 Open your browser at **`http://localhost:8501`**.
 
 The Web App features 4 dedicated tabs:
-1. 📊 **Data Science & Analytics Dashboard:** Real-time KPI cards, interactive tier filters, name search, Seaborn charts, correlation heatmap, and CSV export.
-2. 🎮 **Play Quiz:** Interactive candidate assessment with timer, hint expander, and instant balloons result.
-3. 🏆 **Live Leaderboard:** Real-time ranks (🥇, 🥈, 🥉) with progress bars.
-4. 🛠️ **Admin Portal:** Secure management (Username: `admin`, Password: `admin123`) for question editing and CSV bulk uploads.
+1.  **Data Science & Analytics Dashboard:** Real-time KPI cards, interactive tier filters, name search, Seaborn charts, correlation heatmap, and CSV export.
+2.  **Play Quiz:** Interactive candidate assessment with timer, hint expander, and instant balloons result.
+3.  **Live Leaderboard:** Real-time ranks (, , ) with progress bars.
+4.  **Admin Portal:** Secure management (Username: `admin`, Password: `admin123`) for question editing and CSV bulk uploads.
 
 ### 2. Launch the Terminal Console Interface
 ```bash
@@ -134,7 +134,7 @@ jupyter notebook Quiz_Data_Science_Analysis.ipynb
 
 ---
 
-## 🌐 1-Click Free Cloud Deployment (Streamlit Cloud)
+##  1-Click Free Cloud Deployment (Streamlit Cloud)
 
 To get a live public portfolio link for your resume and LinkedIn:
 1. Push this repository to **GitHub**:
@@ -151,7 +151,7 @@ To get a live public portfolio link for your resume and LinkedIn:
 
 ---
 
-## 🏆 Key Talking Points for Technical Interviews
+##  Key Talking Points for Technical Interviews
 
 When explaining this project in an interview or viva:
 1. **End-to-End Ownership:** *"I developed both the operational data collection application and the downstream analytics pipeline. User actions like hints taken and time elapsed are captured in SQLite and analyzed using Pandas and Seaborn."*
