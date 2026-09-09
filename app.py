@@ -74,6 +74,30 @@ def init_db(conn):
         admin_pass = auth_utils.get_default_admin_password()
         pwd_hash = auth_utils.hash_password(admin_pass)
         cur.execute("INSERT INTO login VALUES ('admin', ?, 'admin', 'active')", (pwd_hash,))
+    
+    # Auto-seed questions from quiz.csv if questions table is empty
+    cur.execute("SELECT COUNT(*) FROM questions")
+    if cur.fetchone()[0] == 0:
+        csv_path = os.path.join(BASE_DIR, "quiz.csv")
+        if os.path.exists(csv_path):
+            try:
+                df = pd.read_csv(csv_path)
+                records = []
+                for _, row in df.iterrows():
+                    records.append((
+                        row.get("Question", ""),
+                        row.get("Option1", ""),
+                        row.get("Option2", ""),
+                        row.get("Option3", ""),
+                        row.get("Option4", ""),
+                        row.get("CorrectAnswer", ""),
+                        row.get("hint", "") if pd.notna(row.get("hint")) else "",
+                        row.get("explanation", "") if pd.notna(row.get("explanation")) else ""
+                    ))
+                cur.executemany("INSERT INTO questions (ques, a, b, c, d, correct, hint, explanation) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", records)
+            except Exception as e:
+                print(f"Error auto-loading quiz.csv: {e}")
+                
     conn.commit()
 
 # Initialize database on app startup
